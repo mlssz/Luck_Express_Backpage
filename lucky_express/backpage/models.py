@@ -30,16 +30,23 @@ class User(models.Model):
         (3, "待审核用户"),
     )
 
-    account = FixedCharField(max_length=11)
-    name = models.CharField(max_length=128, default="无名", null=True)
-    signup_time = models.DateField(auto_now=True)
+    account = FixedCharField(max_length=11, verbose_name="账号")
+    name = models.CharField(max_length=128, default="无名", null=True, verbose_name="名字")
+    signup_time = models.DateField(auto_now=True, verbose_name="登录时间")
     token = models.CharField(max_length=64, null=True)
-    u_type = TinyIntField(default=0, choices=UserTypes, db_column="type")
+    user_type = TinyIntField(default=0, choices=UserTypes, db_column="type", verbose_name="用户类型")
+
+    def __str__(self):
+        return "{}-{}".format(self.account, self.name)
 
     class Meta:
         db_table = "user"
+        verbose_name="基础用户"
+        verbose_name_plural="基础用户"
 
 
+
+# 租车者
 # id	用户表外键	int	primary key not null
 # position	即时位置	varchar(128)
 # score	用户积分	int	not null default 0
@@ -50,14 +57,21 @@ class Rental(models.Model):
         User,
         on_delete=models.CASCADE,
         primary_key=True,
-        db_column="id"
+        db_column="id",
+        verbose_name="用户id"
     )
-    position = models.CharField(max_length=128, null=True)
-    score = models.IntegerField(default=0)
+    position = models.CharField(max_length=128, null=True, verbose_name="即时位置")
+    score = models.IntegerField(default=0, verbose_name="用户积分")
+
+    def __str__(self):
+        return "{}-{}".format(self.id.account, self.id.name)
 
     class Meta:
         db_table = "rental"
+        verbose_name="租车者"
+        verbose_name_plural="租车者"
 
+# 货车主
 # id	用户表外键	int	primary key not null
 # position	即时位置	varchar(128)
 # score	用户信誉积分	int	not null default 0
@@ -70,15 +84,21 @@ class Lessee(models.Model):
         User,
         on_delete=models.CASCADE,
         primary_key=True,
-        db_column="id"
+        db_column="id",
+        verbose_name="用户id"
     )
-    position = models.CharField(max_length=128, null=True)
-    score = models.IntegerField(default=0)
-    realname = models.CharField(max_length=128)
-    ci = models.CharField(max_length=18, null=True)
+    position = models.CharField(max_length=128, null=True, verbose_name="即时位置")
+    score = models.IntegerField(default=0, verbose_name="信誉积分")
+    realname = models.CharField(max_length=128, verbose_name="真实姓名")
+    ci = models.CharField(max_length=18, null=True, verbose_name="身份证号")
+
+    def __str__(self):
+        return "{}-{}".format(self.account, self.name)
 
     class Meta:
         db_table = "lessee"
+        verbose_name="货车主"
+        verbose_name_plural="货车主"
 
 # rental	租车人	int	foreign key not null
 # lessee	承租人	int	foreign key
@@ -108,27 +128,31 @@ class Orders(models.Model):
         Rental,
         on_delete=models.CASCADE,
         db_column="rental",
+        verbose_name="租车者id"
     )
     lessee = models.ForeignKey(
         Lessee,
         on_delete=models.CASCADE,
         null=True,
         db_column="lessee",
+        verbose_name="货车主id"
     )
 
-    starttime = models.DateField(auto_now=True)
-    endtime = models.DateField(null=True)
-    startplace = models.CharField(max_length=32, null=True)
-    endplace = models.CharField(max_length=32, null=True)
-    fee = models.FloatField(default=0)
-    score = models.IntegerField(default=0)
-    accepttime = models.DateField(null=True)
-    finishtime = models.DateField(null=True)
-    remark = models.CharField(max_length=256)
-    status = TinyIntField(default=0, choices=OrderStatus)
+    starttime = models.DateField(auto_now=True, verbose_name="发起时间")
+    endtime = models.DateField(null=True, verbose_name="结束时间")
+    startplace = models.CharField(max_length=32, null=True, verbose_name="起始地点")
+    endplace = models.CharField(max_length=32, null=True, verbose_name="终点")
+    fee = models.FloatField(default=0, verbose_name="费用")
+    score = models.IntegerField(default=0, verbose_name="租车人评分")
+    accepttime = models.DateField(null=True, verbose_name="接单时间")
+    finishtime = models.DateField(null=True, verbose_name="完成订单时间")
+    remark = models.CharField(max_length=256, verbose_name="租车人评价")
+    status = TinyIntField(default=0, choices=OrderStatus, verbose_name="订单状态")
 
     class Meta:
         db_table = "orders"
+        verbose_name="订单"
+        verbose_name_plural="订单"
 
 # rental	租车人id	int	foreign key not null
 # lessee	承租人id	int foreign key
@@ -137,30 +161,34 @@ class Orders(models.Model):
 # center	中间节点	varchar(256)
 # createtime	创建时间	datetime
 # remark	备注	varchar(128)
-class Line:
+class Line(models.Model):
     """Model about car lines"""
 
     rental = models.ForeignKey(
         Rental,
         on_delete=models.CASCADE,
-        db_column="rental"
+        db_column="rental",
+        verbose_name="租车者id"
     )
     lessee = models.ForeignKey(
         Lessee,
         on_delete=models.CASCADE,
         null=True,
-        db_column="lessee"
+        db_column="lessee",
+        verbose_name="货车主id"
     )
 
-    startplace = models.CharField(max_length=32, null=True)
-    endplace = models.CharField(max_length=32, null=True)
-    center = models.CharField(max_length=256, null=True)
+    startplace = models.CharField(max_length=32, null=True, verbose_name="起点")
+    endplace = models.CharField(max_length=32, null=True, verbose_name="终点")
+    center = models.CharField(max_length=256, null=True, verbose_name="中间节点")
 
-    createtime = models.DateField(null=True)
-    remark = models.CharField(max_length=128)
+    createtime = models.DateField(null=True, verbose_name="创建时间")
+    remark = models.CharField(max_length=128, verbose_name="备注")
 
     class Meta:
         db_table = "line"
+        verbose_name="常用路线"
+        verbose_name_plural="常用路线"
 
 # lessee	车主id	int	 foreign key not null
 # no	车牌号	varchar(18)	 not null
@@ -190,20 +218,23 @@ class Truck(models.Model):
     lessee = models.ForeignKey(
         Lessee,
         on_delete=models.CASCADE,
-        db_column="lessee"
+        db_column="lessee",
+        verbose_name="货车主id"
     )
 
-    no = models.CharField(max_length=18)
-    load = models.FloatField(default=0)
-    width = models.FloatField(default=0)
-    heigth = models.FloatField(default=0)
-    length = models.FloatField(default=0)
-    ctype = TinyIntField(default=0, db_column="type", choices=CarTypes)
-    modelinfo = models.CharField(max_length=256, null=True)
-    remark = models.CharField(max_length=32, null=True)
+    no = models.CharField(max_length=18, verbose_name="车牌号")
+    load = models.FloatField(default=0, verbose_name="载重")
+    width = models.FloatField(default=0, verbose_name="宽")
+    heigth = models.FloatField(default=0, verbose_name="高")
+    length = models.FloatField(default=0, verbose_name="长")
+    car_type = TinyIntField(default=0, db_column="type", choices=CarTypes, verbose_name="车辆类型")
+    modelinfo = models.CharField(max_length=256, null=True, verbose_name="其他信息")
+    remark = models.CharField(max_length=32, null=True, verbose_name="备注信息")
 
     class Meta:
         db_table = "truck"
+        verbose_name="车辆"
+        verbose_name_plural="车辆"
 
 # info	广告信息	varchar(128)
 # fee	广告费用	double	default 0
@@ -211,12 +242,13 @@ class Truck(models.Model):
 class Advertisement(models.Model):
     """Model about Advertisements"""
 
-    info = models.CharField(max_length=128)
-    fee = models.FloatField(default=0)
-    time = models.DateField(auto_now=True)
-
+    info = models.CharField(max_length=128, verbose_name="广告信息")
+    fee = models.FloatField(default=0, verbose_name="广告费用")
+    time = models.DateField(auto_now=True, verbose_name="导入时间")
     class Meta:
         db_table = "advertisement"
+        verbose_name="广告"
+        verbose_name_plural="广告"
 
 
 # offer	服务人员id	int	foreign key not null
@@ -230,16 +262,20 @@ class Service(models.Model):
     offer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        db_column="offer"
+        db_column="offer",
+        verbose_name="服务员id"
     )
     customer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        db_column="customer"
+        db_column="customer",
+        verbose_name="客户id"
     )
-    time = models.DateField(auto_now=True)
-    remark = models.CharField(max_length=512)
-    score = models.IntegerField(default=-1)
+    time = models.DateField(auto_now=True, verbose_name="服务时间")
+    remark = models.CharField(max_length=512, verbose_name="备注")
+    score = models.IntegerField(default=-1, verbose_name="评分")
 
     class Meta:
         db_table = "service"
+        verbose_name="服务信息"
+        verbose_name_plural="服务信息"
