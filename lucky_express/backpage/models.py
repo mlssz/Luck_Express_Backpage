@@ -32,6 +32,7 @@ class User(models.Model):
 
     account = FixedCharField(max_length=11, verbose_name="账号")
     name = models.CharField(max_length=128, default="无名", null=True, verbose_name="名字")
+    pre_login_time = models.DateField(auto_now=True, verbose_name="上次登录时间")
     signup_time = models.DateField(auto_now=True, verbose_name="登录时间")
     token = models.CharField(max_length=64, null=True)
     user_type = TinyIntField(default=0, choices=UserTypes, db_column="type", verbose_name="用户类型")
