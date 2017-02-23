@@ -13,6 +13,16 @@ class TinyIntField(models.PositiveSmallIntegerField):
     def db_type(self, connection):
         return "tinyint"
 
+class DateTimeDateField(models.DateField):
+    """DateTimeDateField use 'datetime' instead of 'date'"""
+
+    def __init__(self, *arg, **karg):
+        super(DateTimeDateField, self).__init__(*arg, **karg)
+        self.mysql_now = karg.get("auto_now", False)
+
+    def db_type(self, connection):
+        return "datetime"
+
 
 # id	用户编码	int	primark key auto_increment
 # account	用户手机号	char(11)	not null
@@ -32,8 +42,8 @@ class User(models.Model):
 
     account = FixedCharField(max_length=11, verbose_name="账号")
     name = models.CharField(max_length=128, default="无名", null=True, verbose_name="名字")
-    pre_login_time = models.DateField(auto_now=True, verbose_name="上次登录时间")
-    signup_time = models.DateField(auto_now=True, verbose_name="登录时间")
+    pre_login_time = DateTimeDateField(auto_now=True, verbose_name="上次登录时间")
+    signup_time = DateTimeDateField(auto_now=True, verbose_name="登录时间")
     token = models.CharField(max_length=64, null=True)
     user_type = TinyIntField(default=0, choices=UserTypes, db_column="type", verbose_name="用户类型")
 
@@ -65,7 +75,7 @@ class Rental(models.Model):
     score = models.IntegerField(default=0, verbose_name="用户积分")
 
     def __str__(self):
-        return "{}-{}".format(self.id.account, self.id.name)
+        return "{}".format(self.id)
 
     class Meta:
         db_table = "rental"
@@ -94,7 +104,7 @@ class Lessee(models.Model):
     ci = models.CharField(max_length=18, null=True, verbose_name="身份证号")
 
     def __str__(self):
-        return "{}-{}".format(self.account, self.name)
+        return "{}".format(self.id)
 
     class Meta:
         db_table = "lessee"
@@ -139,14 +149,14 @@ class Orders(models.Model):
         verbose_name="货车主id"
     )
 
-    starttime = models.DateField(auto_now=True, verbose_name="发起时间")
-    endtime = models.DateField(null=True, verbose_name="结束时间")
+    starttime = DateTimeDateField(auto_now=True, verbose_name="发起时间")
+    endtime = DateTimeDateField(null=True, verbose_name="结束时间")
     startplace = models.CharField(max_length=32, null=True, verbose_name="起始地点")
     endplace = models.CharField(max_length=32, null=True, verbose_name="终点")
     fee = models.FloatField(default=0, verbose_name="费用")
     score = models.IntegerField(default=0, verbose_name="租车人评分")
-    accepttime = models.DateField(null=True, verbose_name="接单时间")
-    finishtime = models.DateField(null=True, verbose_name="完成订单时间")
+    accepttime = DateTimeDateField(null=True, verbose_name="接单时间")
+    finishtime = DateTimeDateField(null=True, verbose_name="完成订单时间")
     remark = models.CharField(max_length=256, verbose_name="租车人评价")
     status = TinyIntField(default=0, choices=OrderStatus, verbose_name="订单状态")
 
@@ -183,7 +193,7 @@ class Line(models.Model):
     endplace = models.CharField(max_length=32, null=True, verbose_name="终点")
     center = models.CharField(max_length=256, null=True, verbose_name="中间节点")
 
-    createtime = models.DateField(null=True, verbose_name="创建时间")
+    createtime = DateTimeDateField(null=True, verbose_name="创建时间")
     remark = models.CharField(max_length=128, verbose_name="备注")
 
     class Meta:
@@ -245,7 +255,7 @@ class Advertisement(models.Model):
 
     info = models.CharField(max_length=128, verbose_name="广告信息")
     fee = models.FloatField(default=0, verbose_name="广告费用")
-    time = models.DateField(auto_now=True, verbose_name="导入时间")
+    time = DateTimeDateField(auto_now=True, verbose_name="导入时间")
     class Meta:
         db_table = "advertisement"
         verbose_name="广告"
@@ -272,7 +282,7 @@ class Service(models.Model):
         db_column="customer",
         verbose_name="客户id"
     )
-    time = models.DateField(auto_now=True, verbose_name="服务时间")
+    time = DateTimeDateField(auto_now=True, verbose_name="服务时间")
     remark = models.CharField(max_length=512, verbose_name="备注")
     score = models.IntegerField(default=-1, verbose_name="评分")
 
