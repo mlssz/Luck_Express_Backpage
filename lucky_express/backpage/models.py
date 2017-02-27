@@ -71,7 +71,8 @@ class Rental(models.Model):
         db_column="id",
         verbose_name="用户id"
     )
-    position = models.CharField(max_length=128, null=True, verbose_name="即时位置")
+    position_x = models.FloatField(default=0, verbose_name="即时位置 x")
+    position_y = models.FloatField(default=0, verbose_name="即时位置 y")
     score = models.IntegerField(default=0, verbose_name="用户积分")
 
     def __str__(self):
@@ -98,7 +99,8 @@ class Lessee(models.Model):
         db_column="id",
         verbose_name="用户id"
     )
-    position = models.CharField(max_length=128, null=True, verbose_name="即时位置")
+    position_x = models.FloatField(default=0, verbose_name="即时位置 x")
+    position_y = models.FloatField(default=0, verbose_name="即时位置 y")
     score = models.IntegerField(default=0, verbose_name="信誉积分")
     realname = models.CharField(max_length=128, verbose_name="真实姓名")
     ci = models.CharField(max_length=18, null=True, verbose_name="身份证号")
