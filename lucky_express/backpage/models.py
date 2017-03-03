@@ -13,7 +13,7 @@ class TinyIntField(models.PositiveSmallIntegerField):
     def db_type(self, connection):
         return "tinyint"
 
-class DateTimeDateField(models.DateField):
+class DateTimeDateField(models.DateTimeField):
     """DateTimeDateField use 'datetime' instead of 'date'"""
 
     def __init__(self, *arg, **karg):
@@ -102,6 +102,7 @@ class Lessee(models.Model):
     position_x = models.FloatField(default=0, verbose_name="即时位置 x")
     position_y = models.FloatField(default=0, verbose_name="即时位置 y")
     score = models.IntegerField(default=0, verbose_name="信誉积分")
+    password = models.CharField(max_length=256, verbose_name="密码")
     realname = models.CharField(max_length=128, verbose_name="真实姓名")
     ci = models.CharField(max_length=18, null=True, verbose_name="身份证号")
 
@@ -210,7 +211,7 @@ class Line(models.Model):
 # height	高	double	default 0
 # length	长	double	default 0
 # type	汽车类型	int	default 0	0待审核1无类型2普通货车3厢式货车4封闭货车5罐式货车6平板货车7集装厢车8自卸货车9特殊结构货车
-# modelinfo	其他信息	varchar(256)		可以添加一些其他如车型号
+# morelinfo	其他信息	varchar(256)		可以添加一些其他如车型号
 # remark	备注信息	varchar(32)		用户自定义的车名
 class Truck(models.Model):
     """Models about trucks"""
@@ -236,12 +237,12 @@ class Truck(models.Model):
     )
 
     no = models.CharField(max_length=18, verbose_name="车牌号")
-    load = models.FloatField(default=0, verbose_name="载重")
+    loads = models.FloatField(default=0, verbose_name="载重")
     width = models.FloatField(default=0, verbose_name="宽")
     heigth = models.FloatField(default=0, verbose_name="高")
     length = models.FloatField(default=0, verbose_name="长")
     car_type = TinyIntField(default=0, db_column="type", choices=CarTypes, verbose_name="车辆类型")
-    modelinfo = models.CharField(max_length=256, null=True, verbose_name="其他信息")
+    moreinfo = models.CharField(max_length=256, null=True, verbose_name="其他信息")
     remark = models.CharField(max_length=32, null=True, verbose_name="备注信息")
 
     class Meta:
