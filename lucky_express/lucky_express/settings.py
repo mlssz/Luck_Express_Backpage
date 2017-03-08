@@ -25,7 +25,7 @@ SECRET_KEY = 'q!512p!*_-5-r8%%%9^q5eh#v4&7c82$()%vqg#fyucud_-goj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -132,4 +132,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
+STATIC_ROOT = '/home/ubuntu/Luck_Express_Backpage/static/'
 STATIC_URL = '/static/'
