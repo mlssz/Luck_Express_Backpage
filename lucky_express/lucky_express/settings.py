@@ -89,8 +89,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mlssztestdb',
         'USER': 'mlssz',
-        'PASSWORD': 'mlssz123passwd',
-        'HOST': '115.159.155.229',
+        'PASSWORD': 'mlssz_123_Passwd',
+        'HOST': 'www.oeli.pub',
         'PORT': '3306',
     }
 }
