@@ -132,4 +132,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
+STATIC_ROOT = '/home/ubuntu/Luck_Express_Backpage/static/'
 STATIC_URL = '/static/'
