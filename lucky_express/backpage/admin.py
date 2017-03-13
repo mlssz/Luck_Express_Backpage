@@ -13,7 +13,7 @@ mlssz_admin = MlsszAdminSite("mlssz_admin")
 
 @admin.register(User, site=mlssz_admin)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("account", "name", "user_type")
+    list_display = ("id", "account", "name", "user_type")
 
 @admin.register(Rental, site=mlssz_admin)
 class RentalAdmin(admin.ModelAdmin):
