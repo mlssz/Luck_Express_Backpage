@@ -227,8 +227,6 @@ class Truck(models.Model):
 
     lessee = models.OneToOneField(
         Lessee,
-        null=True,
-        blank=True,
         on_delete=models.CASCADE,
         db_column="lessee",
         verbose_name="货车主id"
