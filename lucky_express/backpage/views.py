@@ -14,8 +14,13 @@ class NearLesseesList(APIView):
     """
     List all near lessees
     """
-    def is_near_lessee(self, limit, rental: "Rental", lessee: "Lessee") -> "bool":
+    def is_near_lessee(self, limit, distance) -> "bool":
         """Compare value of limit and the distance between render and lessee."""
+
+        return 0 <= distance <= limit
+
+    def compute_distance(self, rental: "Rental", lessee: "Lessee") -> "float":
+        """Compute distance between rental and lessee."""
         x1, y1 = rental.position_x, rental.position_y
         x2, y2 = lessee.position_x, lessee.position_y
 
@@ -25,7 +30,7 @@ class NearLesseesList(APIView):
             * math.pow(math.sin((y1 * degree - y2 * degree) / 2), 2)
         )) * 1000
 
-        return 0 <= distance <= limit
+        return distance
 
     def get_object(self, pk):
         """Get object and check the permissions of user."""
@@ -44,11 +49,14 @@ class NearLesseesList(APIView):
         rental.position_x = rental.position_x if position_x is None else float(position_x)
         rental.position_y = rental.position_y if position_y is None else float(position_y)
 
-        lessees = filter(functools.partial(self.is_near_lessee, limit, rental),
-                         Lessee.objects.filter(truck__car_type=car_type))
+        lessee_tuple = ((l, self.compute_distance(rental, l))
+                        for l in Lessee.objects.filter(truck__car_type=car_type))
+        lessee_tuple = list(filter(lambda x: self.is_near_lessee(limit, x[1]), lessee_tuple))
+        lessees = (lt[0] for lt in lessee_tuple)
 
         data = LesseeSerializer(lessees, many=True).data
-        for item in data:
-            item["user"] = item.pop("id")
+        for i in range(len(data)):
+            data[i]["user"] = data[i].pop("id")
+            data[i]["distance"] = lessee_tuple[i][1]
 
         return Response(data)

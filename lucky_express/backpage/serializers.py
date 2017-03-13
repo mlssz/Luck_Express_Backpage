@@ -22,4 +22,4 @@ class LesseeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lessee
-        fields = ("position_x", "position_y", "score", "id")
+        fields = ("position_x", "position_y", "score", "order_count","id")

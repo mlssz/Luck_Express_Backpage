@@ -42,6 +42,7 @@ class NearLesseeTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         stream = BytesIO(response.content)
         result = JSONParser().parse(stream)
+        print(result)
         self.assertEqual(len(result), 2)
 
     def test_get_near_lessees_list_success_without_query(self):
