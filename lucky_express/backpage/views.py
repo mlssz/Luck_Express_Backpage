@@ -37,14 +37,15 @@ class NearLesseesList(APIView):
         """find all lessees near the rental."""
         rental = self.get_object(pk)
 
+        car_type = int(request.GET.get("cartype", 2))
         position_x = request.GET.get("positionx", None)
         position_y = request.GET.get("positiony", None)
         limit = float(request.GET.get("limit", 20))
         rental.position_x = rental.position_x if position_x is None else float(position_x)
         rental.position_y = rental.position_y if position_y is None else float(position_y)
 
-        lessees = filter(
-            functools.partial(self.is_near_lessee, limit, rental), Lessee.objects.all())
+        lessees = filter(functools.partial(self.is_near_lessee, limit, rental),
+                         Lessee.objects.filter(truck__car_type=car_type))
 
         data = LesseeSerializer(lessees, many=True).data
         for item in data:

@@ -5,3 +5,4 @@ django-suit
 djangorestframework
 markdown
 django-filter
+channels

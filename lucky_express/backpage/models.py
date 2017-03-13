@@ -101,7 +101,8 @@ class Lessee(models.Model):
     )
     position_x = models.FloatField(default=0, verbose_name="即时位置 x")
     position_y = models.FloatField(default=0, verbose_name="即时位置 y")
-    score = models.IntegerField(default=0, verbose_name="信誉积分")
+    score = models.IntegerField(default=3, verbose_name="信誉积分")
+    order_count = models.IntegerField(default=0, verbose_name="订单完成数")
     password = models.CharField(max_length=256, verbose_name="密码")
     realname = models.CharField(max_length=128, verbose_name="真实姓名")
     ci = models.CharField(max_length=18, null=True, verbose_name="身份证号")
@@ -210,27 +211,24 @@ class Line(models.Model):
 # width	宽	double	default 0
 # height	高	double	default 0
 # length	长	double	default 0
-# type	汽车类型	int	default 0	0待审核1无类型2普通货车3厢式货车4封闭货车5罐式货车6平板货车7集装厢车8自卸货车9特殊结构货车
+# type	汽车类型	int	default 0 (0, "小型货车"), (1, "大型货车"), (2, "小型平板"), (3, "中型平板"), (4, "大型平板"),
 # morelinfo	其他信息	varchar(256)		可以添加一些其他如车型号
 # remark	备注信息	varchar(32)		用户自定义的车名
 class Truck(models.Model):
     """Models about trucks"""
 
     CarTypes = (
-        (0, "待审核"),
-        (1, "无类型"),
-        (2, "普通货车"),
-        (3, "厢式货车"),
-        (4, "封闭货车"),
-        (5, "罐式货车"),
-        (6, "平板货车"),
-        (7, "集装厢车"),
-        (8, "自卸货车"),
-        (9, "特殊结构货车"),
+        (0, "小型货车"),
+        (1, "大型货车"),
+        (2, "小型平板"),
+        (3, "中型平板"),
+        (4, "大型平板"),
     )
 
-    lessee = models.ForeignKey(
+    lessee = models.OneToOneField(
         Lessee,
+        null=True,
+        blank=True,
         on_delete=models.CASCADE,
         db_column="lessee",
         verbose_name="货车主id"

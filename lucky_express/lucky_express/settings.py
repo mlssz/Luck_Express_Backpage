@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
+ENV_TYPE = os.environ.get("DJANG_ENV", "development")
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'channels',
     'rest_framework',
     'backpage',
 ]
@@ -80,6 +83,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lucky_express.wsgi.application'
 
+CL_BACKEND = "asgiref.inmemory.ChannelLayer" \
+             if ENV_TYPE == "development" else "asgiref.inmemory.ChannelLayer"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": CL_BACKEND,
+        "ROUTING": "lucky_express.routing.channel_routing",
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
