@@ -16,10 +16,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("id", "account", "name", "signup_time", "pre_login_time", "token", "user_type")
 
+
 class LesseeSerializer(serializers.ModelSerializer):
     """For receiving postion of render."""
     id = UserSerializer(read_only=True)
+    truck = serializers.SlugRelatedField(
+            read_only=True,
+            slug_field='no'
+        )
 
     class Meta:
         model = Lessee
-        fields = ("position_x", "position_y", "score", "order_count","id")
+        fields = ("position_x", "position_y", "score", "order_count", "id", "truck")
