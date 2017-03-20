@@ -29,62 +29,103 @@
         }
     </style>
     <script language="javascript" type="text/javascript">
-     var wsUri = "ws://127.0.0.1:8000/234/sdafkjsdfa";
-        var output;
+     var wsUri = "ws://127.0.0.1:8000/test/";
+     var output2;
+     var output3;
 
-        function init() {
-            output = document.getElementById("ws");
-            baseTestWebSocket(function(){console.log("Test Over!")});
-        }
+     function init() {
+       output2 = document.getElementById("echo");
+       output3 = document.getElementById("link");
+       echoWebSocket(
+         linkWebSocket("link/54/ws123/",
+                       linkWebSocket("link/54/ws/",
+                                     linkWebSocket("link/999/ws123/")
+                       )
+         )
+       );
+     }
 
-        function baseTestWebSocket(next) {
-            websocket = new WebSocket(wsUri);
-            websocket.onopen = function(evt) {
-                onOpen(output, evt)
-                websocket.send(JSON.stringify({web: 1, socket:2, django: 3}));
-            };
-            websocket.onclose = function(evt) {
-                onClose(output, evt)
-                next()
-            };
-            websocket.onmessage = function(evt) {
-                onMessage(output, evt)
-                websocket.close()
-            };
-            websocket.onerror = function(evt) {
-                onError(output, evt)
-            };
-        }
+     function linkWebSocket(uri, next) {
+       return function() {
+         websocket = new WebSocket(wsUri + uri);
+         websocket.onopen = function(evt) {
+           onOpen(output3, evt)
+         };
+         websocket.onclose = function(evt) {
+           onClose(output3, evt)
+           if(next) next()
+         };
+         websocket.onmessage = function(evt) {
+           onMessage(output3, evt)
+           websocket.close()
+         };
+         websocket.onerror = function(evt) {
+           onError(output3, evt)
+         };
+       }
+     }
 
-        function onOpen(output, evt) {
-            writeToScreen(output, "CONNECTED");
-        }
+     function echoWebSocket(next) {
+       websocket = new WebSocket(wsUri + "echo/");
+       var count = 4
+       websocket.onopen = function(evt) {
+         onOpen(output2, evt)
+         var message = {"count": count}
+         websocket.send(JSON.stringify(message))
+         count--
+       };
+       websocket.onclose = function(evt) {
+         onClose(output2, evt)
+         next()
+       };
+       websocket.onmessage = function(evt) {
+         onMessage(output2, evt)
+         if (count > 0) {
+           setTimeout(function() {
+             var message = {"count": count}
+             websocket.send(JSON.stringify(message))
+             count--
+           }, 800)
+         } else {
+           websocket.close()
+         }
+       };
+       websocket.onerror = function(evt) {
+         onError(output2, evt)
+       };
+     }
 
-        function onClose(output, evt) {
-            writeToScreen(output, "DISCONNECTED");
-        }
+     function onOpen(output, evt) {
+       writeToScreen(output, "CONNECTED");
+     }
 
-        function onMessage(output, evt) {
-            var str = evt.data
-            writeToScreen(output, '<span style="color: rgb(133,69,117);">RESPONSE: ' + str + '</span>');
-        }
+     function onClose(output, evt) {
+       writeToScreen(output, "DISCONNECTED");
+     }
 
-        function onError(output, evt) {
-            writeToScreen(output, '<span style="color:rgb(209,71,108);">ERROR:</span> ' + evt.data);
-        }
+     function onMessage(output, evt) {
+       var str = evt.data
+       writeToScreen(output, '<span style="color: rgb(133,69,117);">RESPONSE: ' + str + '</span>');
+     }
 
-        function writeToScreen(output, message) {
-            var pre = document.createElement("p");
-            pre.style.wordWrap = "break-word";
-            pre.innerHTML = message;
-            output.appendChild(pre);
-        }
+     function onError(output, evt) {
+       writeToScreen(output, '<span style="color:rgb(209,71,108);">ERROR:</span> ' + evt.data);
+     }
 
-        window.addEventListener("load", init, false);
+     function writeToScreen(output, message) {
+       var pre = document.createElement("p");
+       pre.style.wordWrap = "break-word";
+       pre.innerHTML = message;
+       output.appendChild(pre);
+     }
+
+     window.addEventListener("load", init, false);
     </script>
-
-    <div id="ws" style="margin: 300px auto;width: 33%;text-align: center;">
-        <h2>WebSocket Test For Base Test Service</h2>
+    <div id="echo" style="margin: 300px auto;width: 33%;text-align: center;">
+        <h2>WebSocket Test For Echo Service</h2>
+    </div>
+    <div id="link" style="margin: 300px auto;width: 33%;text-align: center;">
+        <h2>WebSocket Test For Link Service</h2>
     </div>
 </body>
 

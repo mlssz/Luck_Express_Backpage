@@ -23,7 +23,6 @@ class DateTimeDateField(models.DateTimeField):
     def db_type(self, connection):
         return "datetime"
 
-
 # id	用户编码	int	primark key auto_increment
 # account	用户手机号	char(11)	not null
 # name	用户昵称	varchar(128)	default '无名'
