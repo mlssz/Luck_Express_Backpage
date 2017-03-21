@@ -6,3 +6,5 @@ djangorestframework
 markdown
 django-filter
 channels
+asgi_redis
+daphne

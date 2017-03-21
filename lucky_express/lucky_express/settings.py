@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-ENV_TYPE = os.environ.get("DJANG_ENV", "development")
+ENV_TYPE = os.environ.get("DJANGO_ENV", "development")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -83,13 +83,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lucky_express.wsgi.application'
 
-CL_BACKEND = "asgiref.inmemory.ChannelLayer" \
-             if ENV_TYPE == "development" else "asgiref.inmemory.ChannelLayer"
+CL_BACKEND_PRO = {
+    "BACKEND": "asgi_redis.RedisChannelLayer",
+    "CONFIG": {
+        "hosts": [("127.0.0.1", 6379)],
+        },
+    "ROUTING": "lucky_express.routing.channel_routing",
+}
+
+CL_BACKEND_DEV = {
+    "BACKEND": "asgiref.inmemory.ChannelLayer",
+    "ROUTING": "lucky_express.routing.channel_routing",
+}
+
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": CL_BACKEND,
-        "ROUTING": "lucky_express.routing.channel_routing",
-    },
+    'default': CL_BACKEND_PRO if ENV_TYPE == "production" else CL_BACKEND_DEV
 }
 
 # Database

@@ -10,3 +10,4 @@ TAGS
 db.sqlite3
 /static
 /log
+*.rdb
