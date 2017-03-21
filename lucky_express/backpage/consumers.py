@@ -6,6 +6,7 @@ from channels.generic.websockets import JsonWebsocketConsumer
 from django.shortcuts import get_object_or_404
 
 from backpage.models import User
+from backpage.datas import LesseeDM, RentalDM
 
 class TestEchoConsumer(JsonWebsocketConsumer):
     "Service for echo messages."
@@ -86,7 +87,15 @@ class PositionsConsumer(JsonWebsocketConsumer):
             message.reply_channel.send({"accept": False})
             self.close()
 
-        print(message.reply_channel)
+        if obj.user_type == 1:
+            RentalDM.add(int(pk), 0, 0, message.reply_channel, [])
+            message.reply_channel.send({"accept": True})
+        elif obj.user_type == 2:
+            LesseeDM.add(int(pk), 0, 0, message.reply_channel)
+            message.reply_channel.send({"accept": True})
+        else:
+            message.reply_channel.send({"accept": False})
+            self.close()
 
     def receive(self, content, **kwargs):
         """

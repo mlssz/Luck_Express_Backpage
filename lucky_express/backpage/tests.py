@@ -5,6 +5,51 @@ from rest_framework.parsers import JSONParser
 from backpage.models import Rental, Lessee, User, Truck
 from backpage.datas import LesseeDM, RentalDM
 
+from channels import Group
+from channels.tests import ChannelTestCase, HttpClient
+
+
+class WebsocketTests(ChannelTestCase):
+
+    rental_id = 1
+    lessee_id = 1
+
+    def setUp(self):
+        RentalDM.clearData()
+        LesseeDM.clearData()
+        rental = User(account="1", name="rental", user_type=1, token="123")
+        rental.save()
+        # RentalDM.add(rental.id, 30.317636, 120.342755, "0")
+        self.rental_id = rental.id
+
+        Rental.objects.create(id=rental, position_x=30.317636, position_y=120.342755)
+        lessee = User(account="2", name="lessee1", user_type=2, token="1111")
+        lessee.save()
+        # LesseeDM.add(lessee.id, 30.317379, 120.343004, "1")
+        self.lessee_id = lessee.id
+        lessee = Lessee(id=lessee, position_x=30.317379, position_y=120.343004, password="1", realname="1", ci="1")
+        lessee.save()
+        truck = Truck.objects.create(lessee=lessee, no="dsfa", car_type=2)
+
+    def test_connnect_rental(self):
+        client = HttpClient()
+        self.assertIsNone(RentalDM.getData(self.rental_id))
+
+        client.send_and_consume('websocket.connect', path='/{}/{}/'.format(self.rental_id, "123"))
+
+        self.assertEqual(RentalDM.getData(self.rental_id) is None,  False)
+        self.assertEqual(list(RentalDM.listData())[0][0], self.rental_id)
+
+    def test_connnect_lessee(self):
+        client = HttpClient()
+        self.assertIsNone(LesseeDM.getData(self.lessee_id))
+
+        client.send_and_consume('websocket.connect', path='/{}/{}/'.format(self.lessee_id, "1111"))
+
+        self.assertEqual(LesseeDM.getData(self.lessee_id) is None,  False)
+        self.assertEqual(list(LesseeDM.listData())[0][0], self.lessee_id)
+
+
 class NearLesseeTestCase(TestCase):
     rental_id = 1
 
