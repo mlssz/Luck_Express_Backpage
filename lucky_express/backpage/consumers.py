@@ -8,6 +8,15 @@ from django.shortcuts import get_object_or_404
 from backpage.models import User
 from backpage.datas import LesseeDM, RentalDM
 
+def get_item_and_manager_of_pk(pk):
+    item = RentalDM.getData(pk)
+    if item is not None:
+        return (item, RentalDM)
+
+    item = LesseeDM.getData(pk)
+    if item is not None:
+        return (item, LesseeDM)
+
 class TestEchoConsumer(JsonWebsocketConsumer):
     "Service for echo messages."
     strict_ordering = False
@@ -102,8 +111,17 @@ class PositionsConsumer(JsonWebsocketConsumer):
         ASGI WebSocket packet-received and send-packet message types
         both have a "text" key for their textual data.
         """
-        print(content['web'])
-        self.send(content)
+        pk = int(kwargs.get("pk"))
+        state = content.get("state", -1)
+
+        item, manager = get_item_and_manager_of_pk(pk)
+
+        if state == 99:
+            positionx = content.get("positionx", None)
+            positiony = content.get("positiony", None)
+            px = item.position_x if positionx is None else positionx
+            py = item.position_y if positiony is None else positiony
+            manager.update(pk, position=(px, py))
 
     def disconnect(self, message, **kwargs):
         """

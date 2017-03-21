@@ -31,6 +31,36 @@ class WebsocketTests(ChannelTestCase):
         lessee.save()
         truck = Truck.objects.create(lessee=lessee, no="dsfa", car_type=2)
 
+    def test_position_of_lessee_receive_and_update(self):
+        client = HttpClient()
+        self.assertIsNone(LesseeDM.getData(self.lessee_id))
+
+        client.send_and_consume('websocket.connect',
+                                path='/{}/{}/'.format(self.lessee_id, "1111"))
+
+        client.send_and_consume('websocket.receive',
+                                text={"state": 99, "positionx": 99, "positiony": 99},
+                                path='/{}/{}/'.format(self.lessee_id, "1111"))
+
+        item = LesseeDM.getData(self.lessee_id)
+        self.assertEqual(item.position_x,  99)
+        self.assertEqual(item.position_y,  99)
+
+    def test_position_of_rental_receive_and_update(self):
+        client = HttpClient()
+        self.assertIsNone(RentalDM.getData(self.rental_id))
+
+        client.send_and_consume('websocket.connect',
+                                path='/{}/{}/'.format(self.rental_id, "123"))
+
+        client.send_and_consume('websocket.receive',
+                                text={"state": 99, "positionx": 99, "positiony": 99},
+                                path='/{}/{}/'.format(self.rental_id, "123"))
+
+        item = RentalDM.getData(self.rental_id)
+        self.assertEqual(item.position_x,  99)
+        self.assertEqual(item.position_y,  99)
+
     def test_connnect_rental(self):
         client = HttpClient()
         self.assertIsNone(RentalDM.getData(self.rental_id))
