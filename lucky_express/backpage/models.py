@@ -1,6 +1,14 @@
 from django.db import models
 from django.conf import settings
 
+CarTypes = (
+    (0, "小型货车"),
+    (1, "大型货车"),
+    (2, "小型平板"),
+    (3, "中型平板"),
+    (4, "大型平板"),
+)
+
 class FixedCharField(models.CharField):
     """FixedCharField use 'char' instead of 'varchar'"""
 
@@ -125,14 +133,15 @@ class Lessee(models.Model):
 # accepttime	承租人接单时间	datetime
 # finishtime	承租人完成订单时间	datetime
 # remark	租车人对订单的评价	varchar(256)
-# status	订单状态	tinyint	default 0	0保存订单1预定订单2发起订单3订单被接受4完成订单5订单未完成结束
+# trucktype	汽车类型	int	default 0	(0, "小型货车"), (1, "大型货车"), (2, "小型平板"), (3, "中型平板"), (4, "大型平板"),
+# status	订单状态	tinyint	default 0	0系统选车订单1自主选车订单2长期订单3订单被接受4完成订单5订单未完成结束
 class Orders(models.Model):
     """Model about order"""
 
     OrderStatus = (
-        (0, "保存订单"),
-        (1, "预定订单"),
-        (2, "发起订单"),
+        (0, "系统选车订单"),
+        (1, "自主选车订单"),
+        (2, "长期订单"),
         (3, "订单被接受"),
         (4, "完成订单"),
         (5, "订单未完成结束"),
@@ -163,6 +172,7 @@ class Orders(models.Model):
     accepttime = DateTimeDateField(null=True, verbose_name="接单时间")
     finishtime = DateTimeDateField(null=True, verbose_name="完成订单时间")
     remark = models.CharField(max_length=256, verbose_name="租车人评价")
+    trucktype = models.IntegerField(default=0, choices=CarTypes, verbose_name="货车类型")
     status = TinyIntField(default=0, choices=OrderStatus, verbose_name="订单状态")
 
     class Meta:
@@ -206,6 +216,7 @@ class Line(models.Model):
         verbose_name="常用路线"
         verbose_name_plural="常用路线"
 
+
 # lessee	车主id	int	 foreign key not null
 # no	车牌号	varchar(18)	 not null
 # load	载重	double	default 0
@@ -217,14 +228,6 @@ class Line(models.Model):
 # remark	备注信息	varchar(32)		用户自定义的车名
 class Truck(models.Model):
     """Models about trucks"""
-
-    CarTypes = (
-        (0, "小型货车"),
-        (1, "大型货车"),
-        (2, "小型平板"),
-        (3, "中型平板"),
-        (4, "大型平板"),
-    )
 
     lessee = models.OneToOneField(
         Lessee,

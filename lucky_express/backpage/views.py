@@ -1,4 +1,4 @@
-import math, functools
+import functools
 from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
@@ -8,7 +8,8 @@ from rest_framework import status
 from backpage.serializers import LesseeSerializer
 from backpage.models import Lessee, Rental
 
-degree = math.pi / 180
+from backpage.datas import LesseeDM, RentalDM
+from backpage.utils import compute_distance
 
 class NearLesseesList(APIView):
     """
@@ -19,18 +20,12 @@ class NearLesseesList(APIView):
 
         return 0 <= distance <= limit
 
-    def compute_distance(self, rental: "Rental", lessee: "Lessee") -> "float":
-        """Compute distance between rental and lessee."""
-        x1, y1 = rental.position_x, rental.position_y
-        x2, y2 = lessee.position_x, lessee.position_y
+    def compute_distance(self, rental_position, lessee_id):
+        lessee_item = LesseeDM.getData(lessee_id)
+        if lessee_item is None:
+            return -1
 
-        distance = 6378.138 * 2 * math.asin(math.sqrt(
-            math.pow(math.sin((x1 * degree -x2 * degree) / 2), 2)
-            + math.cos(x1 * degree) * math.cos(x2 * degree)
-            * math.pow(math.sin((y1 * degree - y2 * degree) / 2), 2)
-        )) * 1000
-
-        return distance
+        return compute_distance(rental_position, (lessee_item.position_x, lessee_item.position_y))
 
     def get_object(self, pk):
         """Get object and check the permissions of user."""
@@ -41,15 +36,20 @@ class NearLesseesList(APIView):
     def get(self, request, pk, format=None):
         """find all lessees near the rental."""
         rental = self.get_object(pk)
+        rental_item = RentalDM.getData(int(pk))
 
         car_type = int(request.GET.get("cartype", 2))
         position_x = request.GET.get("positionx", None)
         position_y = request.GET.get("positiony", None)
         limit = float(request.GET.get("limit", 20))
-        rental.position_x = rental.position_x if position_x is None else float(position_x)
-        rental.position_y = rental.position_y if position_y is None else float(position_y)
 
-        lessee_tuple = ((l, self.compute_distance(rental, l))
+        if rental_item is None and (position_y is None or position_x is None):
+            return Response([])
+
+        px = rental_item.position_x if position_x is None else float(position_x)
+        py = rental_item.position_y if position_y is None else float(position_y)
+
+        lessee_tuple = ((l, self.compute_distance((px, py), l.id.id))
                         for l in Lessee.objects.filter(truck__car_type=car_type))
         lessee_tuple = list(filter(lambda x: self.is_near_lessee(limit, x[1]), lessee_tuple))
         lessees = (lt[0] for lt in lessee_tuple)
