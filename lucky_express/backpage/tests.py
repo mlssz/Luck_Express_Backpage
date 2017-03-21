@@ -31,6 +31,21 @@ class WebsocketTests(ChannelTestCase):
         lessee.save()
         truck = Truck.objects.create(lessee=lessee, no="dsfa", car_type=2)
 
+    def test_position_of_rental_receive_and_update(self):
+        client = HttpClient()
+        self.assertIsNone(RentalDM.getData(self.rental_id))
+
+        client.send_and_consume('websocket.connect',
+                                path='/{}/{}/'.format(self.rental_id, "123"))
+
+        client.send_and_consume('websocket.receive',
+                                text={"state": 99, "positionx": 99, "positiony": 99},
+                                path='/{}/{}/'.format(self.rental_id, "123"))
+
+        item = RentalDM.getData(self.rental_id)
+        self.assertEqual(item.position_x,  99)
+        self.assertEqual(item.position_y,  99)
+
     def test_position_of_lessee_receive_and_update(self):
         client = HttpClient()
         self.assertIsNone(LesseeDM.getData(self.lessee_id))
@@ -61,7 +76,7 @@ class WebsocketTests(ChannelTestCase):
         self.assertEqual(item.position_x,  99)
         self.assertEqual(item.position_y,  99)
 
-    def test_connnect_rental(self):
+    def test_connnect_rental_disconnect(self):
         client = HttpClient()
         self.assertIsNone(RentalDM.getData(self.rental_id))
 
@@ -70,7 +85,10 @@ class WebsocketTests(ChannelTestCase):
         self.assertEqual(RentalDM.getData(self.rental_id) is None,  False)
         self.assertEqual(list(RentalDM.listData())[0][0], self.rental_id)
 
-    def test_connnect_lessee(self):
+        client.send_and_consume('websocket.disconnect', path='/{}/{}/'.format(self.rental_id, "123"))
+        self.assertEqual(RentalDM.getData(self.rental_id) is None, True)
+
+    def test_connnect_lessee_disconnect(self):
         client = HttpClient()
         self.assertIsNone(LesseeDM.getData(self.lessee_id))
 
@@ -79,6 +97,8 @@ class WebsocketTests(ChannelTestCase):
         self.assertEqual(LesseeDM.getData(self.lessee_id) is None,  False)
         self.assertEqual(list(LesseeDM.listData())[0][0], self.lessee_id)
 
+        client.send_and_consume('websocket.disconnect', path='/{}/{}/'.format(self.lessee_id, "1111"))
+        self.assertEqual(RentalDM.getData(self.lessee_id) is None, True)
 
 class NearLesseeTestCase(TestCase):
     rental_id = 1

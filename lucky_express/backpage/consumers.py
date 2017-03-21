@@ -127,4 +127,6 @@ class PositionsConsumer(JsonWebsocketConsumer):
         """
         Perform things on connection close
         """
-        print(message.reply_channel)
+        pk = int(kwargs.get("pk"))
+        item, manager = get_item_and_manager_of_pk(pk)
+        manager.deleteData(pk)
