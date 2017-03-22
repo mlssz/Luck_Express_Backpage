@@ -39,7 +39,7 @@ class WebsocketTests(ChannelTestCase):
                                 path='/{}/{}/'.format(self.rental_id, "123"))
 
         client.send_and_consume('websocket.receive',
-                                text={"state": 99, "positionx": 99, "positiony": 99},
+                                text={"action": 99, "positionx": 99, "positiony": 99},
                                 path='/{}/{}/'.format(self.rental_id, "123"))
 
         item = RentalDM.getData(self.rental_id)
@@ -54,7 +54,7 @@ class WebsocketTests(ChannelTestCase):
                                 path='/{}/{}/'.format(self.lessee_id, "1111"))
 
         client.send_and_consume('websocket.receive',
-                                text={"state": 99, "positionx": 99, "positiony": 99},
+                                text={"action": 99, "positionx": 99, "positiony": 99},
                                 path='/{}/{}/'.format(self.lessee_id, "1111"))
 
         item = LesseeDM.getData(self.lessee_id)
@@ -69,7 +69,7 @@ class WebsocketTests(ChannelTestCase):
                                 path='/{}/{}/'.format(self.rental_id, "123"))
 
         client.send_and_consume('websocket.receive',
-                                text={"state": 99, "positionx": 99, "positiony": 99},
+                                text={"action": 99, "positionx": 99, "positiony": 99},
                                 path='/{}/{}/'.format(self.rental_id, "123"))
 
         item = RentalDM.getData(self.rental_id)

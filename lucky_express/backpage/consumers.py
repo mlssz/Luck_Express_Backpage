@@ -112,11 +112,11 @@ class PositionsConsumer(JsonWebsocketConsumer):
         both have a "text" key for their textual data.
         """
         pk = int(kwargs.get("pk"))
-        state = content.get("state", -1)
+        action = content.get("action", -1)
 
         item, manager = get_item_and_manager_of_pk(pk)
 
-        if state == 99:
+        if action == 99:
             positionx = content.get("positionx", None)
             positiony = content.get("positiony", None)
             px = item.position_x if positionx is None else positionx
