@@ -21,9 +21,9 @@ class DevDataList(APIView):
         user_type = int(utype)
 
         if user_type == 1:
-            return Response(list(RentalDM.listData()))
+            return Response(map(lambda x: x.__str__(), RentalDM.listData()))
         elif user_type == 2:
-            return Response(list(LesseeDM.listData()))
+            return Response(map(lambda x: x.__str__(), LesseeDM.listData()))
         else:
             return Response("not found!")
 
