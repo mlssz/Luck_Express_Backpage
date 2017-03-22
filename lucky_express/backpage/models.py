@@ -134,7 +134,7 @@ class Lessee(models.Model):
 # finishtime	承租人完成订单时间	datetime
 # remark	租车人对订单的评价	varchar(256)
 # trucktype	汽车类型	int	default 0	(0, "小型货车"), (1, "大型货车"), (2, "小型平板"), (3, "中型平板"), (4, "大型平板"),
-# status	订单状态	tinyint	default 0	0系统选车订单1自主选车订单2长期订单3订单被接受4完成订单5订单未完成结束
+# status	订单状态	tinyint	default 0	0系统选车订单1自主选车订单2长期订单3订单被接受4完成订单5订单未完成结束6预约订单
 class Orders(models.Model):
     """Model about order"""
 
@@ -145,6 +145,7 @@ class Orders(models.Model):
         (3, "订单被接受"),
         (4, "完成订单"),
         (5, "订单未完成结束"),
+        (6, "预约订单"),
     )
 
     rental = models.ForeignKey(
