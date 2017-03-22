@@ -25,7 +25,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 urlpatterns = [
     url(r"^admin/", mlssz_admin.urls),
     url(r"^api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-    url(r"^rent/(?P<pk>[0-9]+)/near_lessees/$", views.NearLesseesList.as_view())
+    url(r"^rent/(?P<pk>[0-9]+)/near_lessees/$", views.NearLesseesList.as_view()),
+    url(r"^datas/(?P<utype>[0-9])/$", views.DevDataList.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

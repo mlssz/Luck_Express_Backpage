@@ -11,6 +11,23 @@ from backpage.models import Lessee, Rental
 from backpage.datas import LesseeDM, RentalDM
 from backpage.utils import compute_distance
 
+class DevDataList(APIView):
+    """
+    List all near lessees
+    """
+
+    def get(self, request, utype, format=None):
+        """find all lessees near the rental."""
+        user_type = int(utype)
+
+        if user_type == 1:
+            return Response(list(RentalDM.listData()))
+        elif user_type == 2:
+            return Response(list(LesseeDM.listData()))
+        else:
+            return Response("not found!")
+
+
 class NearLesseesList(APIView):
     """
     List all near lessees

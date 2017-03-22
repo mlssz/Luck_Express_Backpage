@@ -177,3 +177,45 @@ class NearLesseeTestCase(TestCase):
         response = self.client.get(
             "/rent/{}/near_lessees/?token=123&positoinx=30.317636&positiony=120.342755&limit=40".format(21343421))
         self.assertEqual(response.status_code, 404)
+
+
+class DevApiTestCase(TestCase):
+
+    def setUp(self):
+        RentalDM.clearData()
+        LesseeDM.clearData()
+        rental = User(account="1", name="rental", user_type=1, token="123")
+        rental.save()
+        RentalDM.add(rental.id, 1, 1, "1")
+        # RentalDM.add(rental.id, 30.317636, 120.342755, "0")
+        Rental.objects.create(id=rental, position_x=30.317636, position_y=120.342755)
+        rental = User(account="2", name="rental", user_type=1, token="123")
+        rental.save()
+        # RentalDM.add(rental.id, 30.317636, 120.342755, "0")
+        RentalDM.add(rental.id, 2, 2, "2")
+        Rental.objects.create(id=rental, position_x=30.317636, position_y=120.342755)
+        lessee = User(account="3", name="lessee1", user_type=2, token="1111")
+        lessee.save()
+        LesseeDM.add(lessee.id, 3, 3, "3")
+        # LesseeDM.add(lessee.id, 30.317379, 120.343004, "1")
+        lessee = Lessee(id=lessee, position_x=30.317379, position_y=120.343004, password="1", realname="1", ci="1")
+        lessee.save()
+        truck = Truck.objects.create(lessee=lessee, no="dsfa", car_type=2)
+        lessee = User(account="4", name="lessee1", user_type=2, token="1111")
+        lessee.save()
+        LesseeDM.add(lessee.id, 4, 4, "4")
+        # LesseeDM.add(lessee.id, 30.317379, 120.343004, "1")
+        lessee = Lessee(id=lessee, position_x=30.317379, position_y=120.343004, password="1", realname="1", ci="1")
+        lessee.save()
+        truck = Truck.objects.create(lessee=lessee, no="dsfa", car_type=2)
+
+    def test_data_list(self):
+        response = self.client.get("/datas/1/")
+        stream = BytesIO(response.content)
+        result = JSONParser().parse(stream)
+        self.assertEqual(len(result), 2)
+
+        response = self.client.get("/datas/2/")
+        stream = BytesIO(response.content)
+        result = JSONParser().parse(stream)
+        self.assertEqual(len(result), 2)
