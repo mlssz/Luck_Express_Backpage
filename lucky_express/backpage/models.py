@@ -26,7 +26,7 @@ class DateTimeDateField(models.DateTimeField):
 
     def __init__(self, *arg, **karg):
         super(DateTimeDateField, self).__init__(*arg, **karg)
-        self.mysql_now = karg.get("auto_now", False)
+        self.mysql_now = karg.get("auto_now_add", False)
 
     def db_type(self, connection):
         return "datetime"
@@ -49,8 +49,8 @@ class User(models.Model):
 
     account = FixedCharField(max_length=11, verbose_name="账号")
     name = models.CharField(max_length=128, default="无名", null=True, verbose_name="名字")
-    pre_login_time = DateTimeDateField(auto_now=True, verbose_name="上次登录时间")
-    signup_time = DateTimeDateField(auto_now=True, verbose_name="登录时间")
+    pre_login_time = DateTimeDateField(auto_now_add=True, verbose_name="上次登录时间")
+    signup_time = DateTimeDateField(auto_now_add=True, verbose_name="注册时间")
     token = models.CharField(max_length=64, null=True)
     user_type = TinyIntField(default=0, choices=UserTypes, db_column="type", verbose_name="用户类型")
 
@@ -162,7 +162,7 @@ class Orders(models.Model):
         verbose_name="货车主id"
     )
 
-    starttime = DateTimeDateField(auto_now=True, verbose_name="发起时间")
+    starttime = DateTimeDateField(auto_now_add=True, verbose_name="发起时间")
     endtime = DateTimeDateField(null=True, verbose_name="结束时间")
     startplace = models.CharField(max_length=32, null=True, verbose_name="起始地点")
     startplacey = models.FloatField(default=0, verbose_name="起始位置 y")
@@ -259,7 +259,7 @@ class Advertisement(models.Model):
 
     info = models.CharField(max_length=128, verbose_name="广告信息")
     fee = models.FloatField(default=0, verbose_name="广告费用")
-    time = DateTimeDateField(auto_now=True, verbose_name="导入时间")
+    time = DateTimeDateField(auto_now_add=True, verbose_name="导入时间")
     class Meta:
         db_table = "advertisement"
         verbose_name="广告"
@@ -286,7 +286,7 @@ class Service(models.Model):
         db_column="customer",
         verbose_name="客户id"
     )
-    time = DateTimeDateField(auto_now=True, verbose_name="服务时间")
+    time = DateTimeDateField(auto_now_add=True, verbose_name="服务时间")
     remark = models.CharField(max_length=512, verbose_name="备注")
     score = models.IntegerField(default=-1, verbose_name="评分")
 

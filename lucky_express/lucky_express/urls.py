@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 
 from backpage.admin import mlssz_admin
 from backpage import views
+from backpage import apps
 
 from django.contrib.auth.models import User
 

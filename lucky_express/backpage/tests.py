@@ -1,13 +1,24 @@
 from django.test import TestCase
 from django.utils.six import BytesIO
+from django.utils import timezone
 from rest_framework.parsers import JSONParser
 
-from backpage.models import Rental, Lessee, User, Truck
+from backpage.models import (
+    Orders,
+    Rental,
+    Lessee,
+    User,
+    Truck
+)
 from backpage.datas import LesseeDM, RentalDM
+from backpage.apps import toggle_boardcast
 
 from channels import Group
 from channels.tests import ChannelTestCase, HttpClient
 
+import time, datetime
+
+toggle_boardcast()
 
 class WebsocketTests(ChannelTestCase):
 
@@ -17,12 +28,14 @@ class WebsocketTests(ChannelTestCase):
     def setUp(self):
         RentalDM.clearData()
         LesseeDM.clearData()
+        # rentals
         rental = User(account="1", name="rental", user_type=1, token="123")
         rental.save()
         # RentalDM.add(rental.id, 30.317636, 120.342755, "0")
         self.rental_id = rental.id
-
         Rental.objects.create(id=rental, position_x=30.317636, position_y=120.342755)
+
+        # lessees
         lessee = User(account="2", name="lessee1", user_type=2, token="1111")
         lessee.save()
         # LesseeDM.add(lessee.id, 30.317379, 120.343004, "1")

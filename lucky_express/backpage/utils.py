@@ -2,6 +2,7 @@
 Base utils for backpage
 """
 import math
+import threading
 
 degree = math.pi / 180
 
@@ -17,3 +18,13 @@ def compute_distance(A: "tuple", B: "tuple") -> "float":
     )) * 1000
 
     return distance
+
+def _setInterval(inc, func, params):
+    if func(*params):
+        setInterval(inc, func, params)
+
+def setInterval(inc, func, params):
+    """
+    loop func in a new threading until the value of func returned is False.
+    """
+    threading.Timer(inc, _setInterval, (inc, func, params)).start()

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>WebSocket Test</title>
+</head>
+
+<body style="color: rgb(52,149,207);background: rgb(243,238,238);">
+    <style type="text/css">
+        body {
+            display: -webkit-box;
+            /* OLD - iOS 6-, Safari 3.1-6 */
+            display: -moz-flex;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: justify;
+            -moz-justify-content: space-around;
+            -webkit-justify-content: space-around;
+            justify-content: space-around;
+            -webkit-box-align: start;
+            -moz-align-items: flex-start;
+            -webkit-align-items: flex-start;
+            align-items: flex-start;
+            -webkit-box-orient: horizontal;
+            -moz-flex-flow: row;
+            -webkit-flex-flow: row;
+            flex-flow: row;
+        }
+    </style>
+    <script language="javascript" type="text/javascript">
+     var wsUri = "ws://127.0.0.1:8000/999/ws123/";
+     var output;
+
+     function init() {
+       output = document.getElementById("position");
+       positionWebsocket()
+     }
+
+     function positionWebsocket() {
+       websocket = new WebSocket(wsUri);
+       websocket.onopen = function(evt) {
+         onOpen(output, evt)
+         websocket.send(JSON.stringify({action: 99, positionx:30.317636, positiony:120.342755}))
+         writeToScreen(output, "Position Send")
+       };
+       websocket.onclose = function(evt) {
+         onClose(output, evt)
+       };
+       count = 0
+       websocket.onmessage = function(evt) {
+         onMessage(output, evt)
+         console.log(JSON.parse(evt.data)["orders"].map(function(x){
+           if((x["status"]<3 || x["status" === 6])
+              && x["trucktype"] === 2
+              && x["distance"] <= 5000
+              && x["lessee"] === null
+           ){
+             return [true, new Date(x["starttime"])]
+           }else{
+             return [false]
+           }
+         }))
+         if(count > 4){
+           websocket.close()
+         }
+         count++;
+       };
+       websocket.onerror = function(evt) {
+         onError(output, evt)
+       };
+     }
+
+     function onOpen(output, evt) {
+       writeToScreen(output, "CONNECTED");
+     }
+
+     function onClose(output, evt) {
+       writeToScreen(output, "DISCONNECTED");
+     }
+
+     function onMessage(output, evt) {
+       var str = evt.data
+       writeToScreen(output, '<span style="color: rgb(133,69,117);">RESPONSE: ' + str + '</span>');
+     }
+
+     function onError(output, evt) {
+       writeToScreen(output, '<span style="color:rgb(209,71,108);">ERROR:</span> ' + evt.data);
+     }
+
+     function writeToScreen(output, message) {
+       var pre = document.createElement("p");
+       pre.style.wordWrap = "break-word";
+       pre.innerHTML = message;
+       output.appendChild(pre);
+     }
+
+     window.addEventListener("load", init, false);
+    </script>
+    <div id="position" style="margin: 300px auto;width: 33%;text-align: center;">
+        <h2>WebSocket Test For Position Service</h2>
+    </div>
+</body>
+
+</html>
