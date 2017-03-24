@@ -1,0 +1,50 @@
+{% extends "backpage/base_site.html" %}
+{% load i18n admin_static admin_modify suit_tags admin_urls %}
+{% load url from suit_compat %}
+
+{% block extrastyle %}
+{#  <link rel="stylesheet" type="text/css" href="{% static 'css/my_project.css' %}" media="all">#}
+<style type="text/css" >
+ #wrap {
+   background: #EDEFF1;
+ }
+ .suit-columns {
+   padding: 0;
+   min-width: 640px;
+   max-width: 800px;
+   margin: 0 auto;
+ }
+</style>
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+  {% url 'admin:jsi18n' as jsi18nurl %}
+  <script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+
+  {{ media }}
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+  <div style="max-width: 640px; margin: 0 auto 10px;border-top-radius: 4px;">
+    {% for item in pictures %}
+    <p style="background: white; margin: 0;padding: 10px 20px 5px 10px; border-top: 1px solid #EDEDED;font-size: 12px; font-weight: normal; line-height: 18px;">{{ item.1 }}</p>
+      <div clase="album" style="padding: 9px;background: #F6F7F8;border-bottom-radius: 4px;">
+        <img src="http://www.oeli.pub:80/haoyun/s/lessee/download?uid={{ uid }}&type={{ item.0 }}" alt="{{ item.1 }}" style="max-width: 640px;min-width: 80px; margin: 0 auto;"/>
+      </div>
+    {% endfor %}
+  <div style="margin: 40px auto;padding:0 20px;width: 200px">
+    <a class="btn btn-hight " style="margin: 0 50px 0 0;" href="/admin/backpage/user/{{uid}}/change/">通过认证</a>
+    <a class="btn btn-hight btn-info" href="{{backlink}}">返回</a>
+  </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{# Empty centered sidebar as now we use sidebar in content block#}
+{% block sidebar_content %}{% endblock %}

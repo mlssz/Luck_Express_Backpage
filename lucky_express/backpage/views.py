@@ -1,5 +1,6 @@
 import functools
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -77,3 +78,12 @@ class NearLesseesList(APIView):
             data[i]["distance"] = lessee_tuple[i][1]
 
         return Response(data)
+
+def lessee_pictures(request, pk, format=None):
+    backlink = request.GET.get("back", "/")
+    context = {
+        "uid": pk,
+        "backlink": backlink,
+        "pictures": [("cp", "车牌号"), ("sfz", "身份证"), ("djz", "车辆登记证书"), ("jsz", "驾驶证"), ("zmz", "车辆正面照"), ("head", "头像")]
+    }
+    return render(request, "backpage/pictures.html", context)

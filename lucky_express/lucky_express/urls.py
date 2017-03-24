@@ -24,6 +24,7 @@ from django.contrib.auth.models import User
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
+    url(r"^lessee/(?P<pk>[0-9]+)/pictures/$", views.lessee_pictures),
     url(r"^admin/", mlssz_admin.urls),
     url(r"^api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     url(r"^rent/(?P<pk>[0-9]+)/near_lessees/$", views.NearLesseesList.as_view()),

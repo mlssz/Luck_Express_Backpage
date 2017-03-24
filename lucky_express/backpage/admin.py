@@ -1,15 +1,15 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from django.contrib.auth.models import User as Aduser
+from django.utils.safestring import mark_safe
 
 from .models import *
 
 # Register your models here.
 
-class MlsszAdminSite(admin.AdminSite):
-    """Special title and header of AdminSite"""
-    site_header = "MLSSZ后台管理"
-    site_title = "MLSSZ"
-
-mlssz_admin = MlsszAdminSite("mlssz_admin")
+mlssz_admin = admin.site # MlsszAdminSite("mlssz_admin")
+mlssz_admin.site_header = "MLSSZ后台管理"
+mlssz_admin.site_title = "MLSSZ"
 
 @admin.register(User, site=mlssz_admin)
 class UserAdmin(admin.ModelAdmin):
@@ -25,13 +25,21 @@ class RentalAdmin(admin.ModelAdmin):
     def name(self, obj):
         return obj.id.name
 
-
 @admin.register(Lessee, site=mlssz_admin)
 class LesseeAdmin(admin.ModelAdmin):
-    list_display = ("account", "realname", "ci")
+    list_display = ("account", "realname", "ci", "picture_info")
 
     def account(self, obj):
         return obj.id.account
+
+    def picture_info(self, instance):
+        """construct a link to picture page."""
+        return format_html(
+            "<span><a href=\"/lessee/{}/pictures/?back=/admin/backpage/lessee/\">审查</a></span>",
+            instance.id.id
+        )
+
+    picture_info.short_description = "图片信息"
 
 @admin.register(Orders, site=mlssz_admin)
 class OrdersAdmin(admin.ModelAdmin):
