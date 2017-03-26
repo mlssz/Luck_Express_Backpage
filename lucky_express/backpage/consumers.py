@@ -95,6 +95,7 @@ class PositionsConsumer(JsonWebsocketConsumer):
         if obj is None:
             message.reply_channel.send({"accept": False})
             self.close()
+            return
 
         if obj.user_type == 1:
             RentalDM.add(int(pk), 0, 0, message.reply_channel, [])
