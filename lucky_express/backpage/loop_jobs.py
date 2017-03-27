@@ -14,10 +14,8 @@ from backpage.serializers import OrderSerializer
 def boardcast_orders(distance=5000):
     # not timeout(15 minuts) and not be accepted
     now = timezone.now()
-    valid_orders = Orders.objects.exclude(
-        starttime__gte=now
-    ).filter(
-        starttime__gte=now - datetime.timedelta(minutes=15),
+    valid_orders = Orders.objects.filter(
+        starttime__gte=now - datetime.timedelta(hours=12),
         lessee__isnull=True,
         status__in=[0,1,2,6]
     )
