@@ -17,6 +17,8 @@ def get_item_and_manager_of_pk(pk):
     if item is not None:
         return (item, LesseeDM)
 
+    return None, None
+
 class TestEchoConsumer(JsonWebsocketConsumer):
     "Service for echo messages."
     strict_ordering = False
@@ -116,6 +118,8 @@ class PositionsConsumer(JsonWebsocketConsumer):
         action = content.get("action", -1)
 
         item, manager = get_item_and_manager_of_pk(pk)
+        if item is None:
+            return
 
         if action == 99:
             positionx = content.get("positionx", None)
